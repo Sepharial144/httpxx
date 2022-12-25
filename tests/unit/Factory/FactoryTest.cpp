@@ -4,64 +4,21 @@
 
 using namespace httpxx;
 
-TEST(FactoryTest, GET_Name) {
-    EXPECT_EQ("GET", factory::getRequestString<req::GET>());
-}
-
-TEST(FactoryTest, POST_Name) {
-    EXPECT_EQ("POST", factory::getRequestString<req::POST>());
-}
-
-TEST(FactoryTest, PUT_Name) {
-    const std::string requestName = factory::getRequestString<req::PUT>();
-    EXPECT_EQ("PUT", factory::getRequestString<req::PUT>());
-}
-
-TEST(FactoryTest, PATCH_Name) {
-    EXPECT_EQ("PATCH", factory::getRequestString<req::PATCH>());
-}
-
-TEST(FactoryTest, DELETE_Name) {
-    EXPECT_EQ("DELETE", factory::getRequestString<req::DELETE>());
-}
-
-TEST(FactoryTest, COPY_Name) {
-    EXPECT_EQ("COPY", factory::getRequestString<req::COPY>());
-}
-
-TEST(FactoryTest, HEAD_Name) {
-    EXPECT_EQ("HEAD", factory::getRequestString<req::HEAD>());
-}
-
-TEST(FactoryTest, OPTIONS_Name) {
-    EXPECT_EQ("OPTIONS", factory::getRequestString<req::OPTIONS>());
-}
-
-TEST(FactoryTest, LINK_Name) {
-    EXPECT_EQ("LINK", factory::getRequestString<req::LINK>());
-}
-
-TEST(FactoryTest, UNLINK_Name) {
-    EXPECT_EQ("UNLINK", factory::getRequestString<req::UNLINK>());
-}
-
-TEST(FactoryTest, PURGE_Name) {
-    EXPECT_EQ("PURGE", factory::getRequestString<req::PURGE>());
-}
-
-TEST(FactoryTest, LOCK_Name) {
-    EXPECT_EQ("LOCK", factory::getRequestString<req::LOCK>());
-}
-
-TEST(FactoryTest, UNLOCK_Name) {
-    EXPECT_EQ("UNLOCK", factory::getRequestString<req::UNLOCK>());
-}
-
-TEST(FactoryTest, PROPFIND_Name) {
-    EXPECT_EQ("PROPFIND", factory::getRequestString<req::PROPFIND>());
-}
-
-TEST(FactoryTest, VIEW_Name) {
-    EXPECT_EQ("VIEW", factory::getRequestString<req::VIEW>());
+TEST(FactoryTest, RequestName) {
+    EXPECT_EQ("GET", factory::getRequestString<req_t::GET>());
+    EXPECT_EQ("POST", factory::getRequestString<req_t::POST>());
+    EXPECT_EQ("PUT", factory::getRequestString<req_t::PUT>());
+    EXPECT_EQ("PATCH", factory::getRequestString<req_t::PATCH>());
+    EXPECT_EQ("DELETE", factory::getRequestString<req_t::DELETE>());
+    EXPECT_EQ("COPY", factory::getRequestString<req_t::COPY>());
+    EXPECT_EQ("HEAD", factory::getRequestString<req_t::HEAD>());
+    EXPECT_EQ("OPTIONS", factory::getRequestString<req_t::OPTIONS>());
+    EXPECT_EQ("LINK", factory::getRequestString<req_t::LINK>());
+    EXPECT_EQ("UNLINK", factory::getRequestString<req_t::UNLINK>());
+    EXPECT_EQ("PURGE", factory::getRequestString<req_t::PURGE>());
+    EXPECT_EQ("LOCK", factory::getRequestString<req_t::LOCK>());
+    EXPECT_EQ("UNLOCK", factory::getRequestString<req_t::UNLOCK>());
+    EXPECT_EQ("PROPFIND", factory::getRequestString<req_t::PROPFIND>());
+    EXPECT_EQ("VIEW", factory::getRequestString<req_t::VIEW>());
 }
 

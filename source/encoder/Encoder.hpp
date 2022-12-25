@@ -1,0 +1,6 @@
+#ifndef _HTTPXX_ENCODER_HPP_
+#define _HTTPXX_ENCODER_HPP_
+
+
+
+#endif // !_HTTPXX_ENCODER_HPP_

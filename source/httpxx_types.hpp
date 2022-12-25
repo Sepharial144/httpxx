@@ -5,7 +5,14 @@
 
 namespace httpxx
 {
-    enum req
+
+    enum class mess_t
+    {
+        REQUEST,
+        RESPONSE
+    };
+
+    enum req_t
     {
         GET,
         POST,
@@ -21,7 +28,8 @@ namespace httpxx
         LOCK,
         UNLOCK,
         PROPFIND,
-        VIEW
+        VIEW,
+        SIZE = 15,
     };
 
     struct header
@@ -31,7 +39,8 @@ namespace httpxx
 
     struct http_info
     {
-        req type;
+        mess_t type;
+        req_t req_type;
         uint32_t len;
     };
 
