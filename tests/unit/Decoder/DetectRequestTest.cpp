@@ -19,6 +19,16 @@ class DetectRequestTest : public ::testing::Test
             std::pair<uint16_t, uint16_t> p = decoder::computeRequest(req);
             EXPECT_EQ(expect, decoder::detectRequest(p));
         }
+
+        void debugDetect(std::initializer_list<const char*> list)
+        {
+            std::vector<const char*> v(list);
+            for(auto el : v)
+            {
+                std::pair<uint16_t, uint16_t> p = decoder::computeRequest(el);
+                std::cout << el << " [" << p.first << " : " << p.second << "]\n";
+            }
+        }
 };
 
 TEST_F(DetectRequestTest, DetectRequest)
@@ -38,10 +48,16 @@ TEST_F(DetectRequestTest, DetectRequest)
     detectTest("UNLOCK", req_t::UNLOCK);
     detectTest("PROPFIND", req_t::PROPFIND);
     detectTest("VIEW", req_t::VIEW);
+
+    debugDetect({ "GET" , "POST", "PUT", 
+                  "PATCH", "DELETE", "COPY", 
+                  "HEAD",  "OPTIONS", "LINK", 
+                  "UNLINK", "PURGE", "LOCK", 
+                  "UNLOCK", "PROPFIND", "VIEW" });
 }
 
 TEST_F(DetectRequestTest, ErrorRequest)
 {
-    // TODO: create all tests with 3 letters based on alphabet
+    // TODO: create all tests with 4 letters based on alphabet
     detectTest("GTE", req_t::SIZE);
 }

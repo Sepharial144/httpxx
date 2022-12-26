@@ -1,6 +1,7 @@
 #ifndef _HTTPXX_TYPES_HPP_
 #define _HTTPXX_TYPES_HPP_
  
+#include <cstddef>
 #include <cstdint>
 
 namespace httpxx
@@ -12,7 +13,7 @@ namespace httpxx
         RESPONSE
     };
 
-    enum req_t
+    enum req_t: uint16_t
     {
         GET,
         POST,
@@ -42,6 +43,7 @@ namespace httpxx
         mess_t type;
         req_t req_type;
         uint32_t len;
+        uint64_t errorType;
     };
 
 }

@@ -8,6 +8,34 @@ namespace httpxx
     namespace factory
     {
         template <req_t type>
+        constexpr uint16_t getRequestSize()
+        {
+            if (type == req_t::GET || type == req_t::PUT)
+                return 3u;
+            if (type == req_t::POST || 
+                type == req_t::COPY || 
+                type == req_t::HEAD || 
+                type == req_t::LINK || 
+                type == req_t::LOCK || 
+                type == req_t::VIEW)
+                return 4u;
+            
+            if (type == req_t::PATCH || type == req_t::PURGE)
+                return 5u;
+
+            if (type == req_t::DELETE || type == req_t::UNLINK || type == req_t::UNLOCK)
+                return 6u;
+
+            if (type == req_t::OPTIONS)
+                return 7u;
+
+            if (type == req_t::PROPFIND)
+                return 8u;
+
+            return static_cast<uint16_t>(req_t::SIZE);
+        }
+
+        template <req_t type>
         constexpr const char* getRequestString()
         {
             if (type == req_t::GET)
