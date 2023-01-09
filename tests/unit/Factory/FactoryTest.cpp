@@ -41,3 +41,13 @@ TEST(FactoryTest, RequestSize) {
     EXPECT_EQ(4u, getRequestSize<req_t::VIEW>());
 }
 
+TEST(FactoryTest, HttpVersionAndSize) {
+    EXPECT_EQ(getHttpVersion<http_t::HTTP_VERSION_11>(), "HTTP1/1");
+    EXPECT_EQ(getHttpVersion<http_t::HTTP_VERSION_2>(), "HTTP2");
+    EXPECT_EQ(getHttpVersion<http_t::HTTP_VERSION_3>(), "HTTP3");
+
+    EXPECT_EQ(7ul, getHttpVersionSize<http_t::HTTP_VERSION_11>());
+    EXPECT_EQ(5ul, getHttpVersionSize<http_t::HTTP_VERSION_2>());
+    EXPECT_EQ(5ul, getHttpVersionSize<http_t::HTTP_VERSION_3>());
+}
+

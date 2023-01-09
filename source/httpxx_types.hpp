@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#define HTTPXX_HTTP_VERSION 0
+
 namespace httpxx
 {
 
@@ -33,9 +35,11 @@ namespace httpxx
         SIZE = 15,
     };
 
-    struct header
+    enum http_t: uint16_t
     {
-
+        HTTP_VERSION_11 = 11,
+        HTTP_VERSION_2 = 2,
+        HTTP_VERSION_3 = 3
     };
 
     struct http_info

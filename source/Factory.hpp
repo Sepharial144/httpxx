@@ -7,6 +7,30 @@ namespace httpxx
 {
     namespace factory
     {
+        template <http_t http_version>
+        constexpr const char* getHttpVersion()
+        {
+            if (http_version == http_t::HTTP_VERSION_11)
+                return "HTTP1/1";
+
+            if (http_version == http_t::HTTP_VERSION_2)
+                return "HTTP2";
+
+            if (http_version == http_t::HTTP_VERSION_3)
+                return "HTTP3";
+        }
+
+        template <http_t http_version>
+        constexpr size_t getHttpVersionSize()
+        {
+            if (http_version == http_t::HTTP_VERSION_11)
+                return 7ul;
+
+            if (http_version == http_t::HTTP_VERSION_2 || 
+                http_version == http_t::HTTP_VERSION_3)
+                return 5ul;
+        }
+
         template <req_t type>
         constexpr uint16_t getRequestSize()
         {
@@ -69,6 +93,13 @@ namespace httpxx
             if (type == req_t::VIEW)
                 return "VIEW";
             return nullptr;
+        }
+
+        template <req_t type>
+        constexpr const char* getRequestParams(size_t& len)
+        {
+            len = getRequestSize<type>();
+            return getRequestString<type>();
         }
     } // ! namespace factory
 } // ! namespace httpx
