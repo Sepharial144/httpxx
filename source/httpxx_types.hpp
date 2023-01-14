@@ -50,6 +50,24 @@ namespace httpxx
         uint64_t errorType;
     };
 
+    struct head_field
+    {
+        const char* data;
+        size_t len;
+    };
+
+    struct header_info
+    {
+        head_field hostName;
+        head_field port;
+        head_field userAgent;
+        head_field accept;
+        head_field lang;
+        head_field connection;
+        head_field contentType;
+        head_field length;
+    };
+
 }
 
 #endif // !_HTTPXX_TYPES_HPP_

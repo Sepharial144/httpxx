@@ -11,7 +11,7 @@ namespace httpxx
         constexpr const char* getHttpVersion()
         {
             if (http_version == http_t::HTTP_VERSION_11)
-                return "HTTP1/1";
+                return "HTTP/1.1";
 
             if (http_version == http_t::HTTP_VERSION_2)
                 return "HTTP2";
@@ -24,7 +24,7 @@ namespace httpxx
         constexpr size_t getHttpVersionSize()
         {
             if (http_version == http_t::HTTP_VERSION_11)
-                return 7ul;
+                return 8ul;
 
             if (http_version == http_t::HTTP_VERSION_2 || 
                 http_version == http_t::HTTP_VERSION_3)

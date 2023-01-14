@@ -127,20 +127,21 @@ namespace httpxx
                     char nextLetter = *(url + pos + 1);
                     if (remain == 1 || nextLetter == ' ')
                     {
-                        // last slash error
-                        return -1;
+                        return -1; // last slash error
                     }
 
                     if(nextLetter == '/') {
-                        //double slash error
-                        return -1;
+                        return -1; // double slash error
                     }
-
                 }
 
                 char letter  = *url;
                 if (letter <= '/' || letter >= ':' && letter <= '@')
-                    //unreadble symbol
+                   return -1; // unreadable symbol error
+
+                if (letter == ' ')
+                    return pos;
+
                 ++pos;
             }
 

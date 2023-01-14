@@ -1,25 +1,15 @@
 #include "encoder/Encoder.hpp"
 #include "Factory.hpp"
+#include "EncoderTest.hpp"
 
 #include <cstring>
 #include <string>
 #include <gtest/gtest.h>
+#include <array>
 
 using namespace httpxx;
 using namespace factory;
-
-TEST(EncoderTest, EncodeRequestType)
-{
-    std::array<uint8_t, 20> request;
-    EXPECT_EQ(factory::getRequestSize<req_t::GET>(), encodeRequestType(request.data(), 0, req_t::GET));
-    
-    const std::string getRequest  = " GET";
-    EXPECT_EQ(getRequest.size(), encodeRequestType(request.data(), 1ul, req_t::GET));
-
-    EXPECT_EQ(factory::getRequestSize<req_t::POST>(), encodeRequestType(request.data(), 0, req_t::POST));
-
-    // TODO finish for another request types
-}
+using namespace encoder;
 
 TEST(EncoderTest, EncodeUrl)
 {
@@ -40,12 +30,12 @@ TEST(EncoderTest, WhiteSpaceInput)
     uint8_t expected_3[3] = {'\0','\0',' '};
 
     size_t offset = whiteSpace(&data[0], 1ul);
-    EXPECT_EQ(1ul, offset);
+    EXPECT_EQ(2ul, offset);
     EXPECT_EQ(true, std::equal(std::begin(data), 
                                std::end(data), 
                                std::begin(expected_1)));
 
-    std::memset(&data[0],  0, 3);
+    std::memset(&data[0], 0, 3);
     offset = whiteSpace(&data[0], 0ul);
     EXPECT_EQ(1ul, offset);
     EXPECT_EQ(true, std::equal(std::begin(data), 
@@ -54,7 +44,7 @@ TEST(EncoderTest, WhiteSpaceInput)
 
     std::memset(&data[0],  0, 3);
     offset = whiteSpace(&data[0], 2ul);
-    EXPECT_EQ(1ul, offset);
+    EXPECT_EQ(3ul, offset);
     EXPECT_EQ(true, std::equal(std::begin(data), 
                                std::end(data), 
                                std::begin(expected_3)));
@@ -81,11 +71,11 @@ TEST(EncoderTest, EndLineInput)
 
 TEST(EncoderTest, EncodeVersionHttp)
 {
-    std::array<uint8_t, 8> version_11 = {0};
+    std::array<uint8_t, 9> version_11 = {0};
     std::array<uint8_t, 6> version_2 = {0};
     std::array<uint8_t, 6> version_3 = {0};
 
-    std::array<uint8_t, 8> expect_version_11 = {'H','T','T','P','1','/','1','\0'};
+    std::array<uint8_t, 9> expect_version_11 = {'H','T','T','P','/','1','.','1','\0'};
     std::array<uint8_t, 6> expect_version_2  = {'H','T','T','P','2','\0'};
     std::array<uint8_t, 6> expect_version_3  = {'H','T','T','P','3','\0'};
 
@@ -98,11 +88,11 @@ TEST(EncoderTest, EncodeVersionHttp)
     EXPECT_EQ(factory::getHttpVersionSize<http_t::HTTP_VERSION_3>(),  encodeHttpVersion(version_3.data(), 0ul, http_t::HTTP_VERSION_3));
     EXPECT_EQ(version_3, expect_version_3);
 
-    std::memset(version_11.data(), 0, 8ul);
+    std::memset(version_11.data(), 0, 9ul);
     std::memset(version_2.data(), 0, 6ul);
     std::memset(version_3.data(), 0, 6ul);
 
-    std::array<uint8_t, 8> expect_version2_11 = {'\0','H','T','T','P','1','/','1'};
+    std::array<uint8_t, 9> expect_version2_11 = {'\0','H','T','T','P','/','1','.','1',};
     std::array<uint8_t, 6> expect_version2_2  = {'\0','H','T','T','P','2'};
     std::array<uint8_t, 6> expect_version2_3  = {'\0','H','T','T','P','3'};
 
@@ -128,4 +118,186 @@ TEST(EncoderTest, EncodeLine)
     EXPECT_EQ(true, std::equal(std::begin(result), 
                                std::end(result), 
                                std::begin(expect_line)));
+}
+
+/*
+TEST(EncoderTest, EncodeField)
+{
+    const char* testData = "Field";
+    const size_t len = strlen(testData);
+    head_field field = encoder::field(testData);
+    EXPECT_STREQ(field.data, testData);
+    EXPECT_EQ(field.len, len);
+}
+*/
+
+TEST(EncoderTest, HeadFieldInit)
+{
+    header_info headInformation = {0};
+    head_field hostField = field("localhost");
+    EXPECT_STREQ(hostField.data, "localhost");
+    EXPECT_EQ(hostField.len, strlen("localhost"));
+}
+
+TEST(EncoderTest, HeadInfoInitialization)
+{
+    header_info headInformation = { 
+        field("localhost"), 
+        field("8080"),
+        field("Agent"),
+        field("Accept"),
+        field("Language"),
+        field("Connection"),
+        field("ConnectionType"),
+        field("100")
+        };
+
+    EXPECT_STREQ(headInformation.hostName.data, "localhost");
+    EXPECT_EQ(headInformation.hostName.len, strlen("localhost"));
+
+    EXPECT_STREQ(headInformation.port.data, "8080");
+    EXPECT_EQ(headInformation.port.len, strlen("8080"));
+
+    EXPECT_STREQ(headInformation.userAgent.data, "Agent");
+    EXPECT_EQ(headInformation.userAgent.len, strlen("Agent"));
+
+    EXPECT_STREQ(headInformation.accept.data, "Accept");
+    EXPECT_EQ(headInformation.accept.len, strlen("Accept"));
+
+    EXPECT_STREQ(headInformation.lang.data, "Language");
+    EXPECT_EQ(headInformation.lang.len, strlen("Language"));
+
+    EXPECT_STREQ(headInformation.connection.data, "Connection");
+    EXPECT_EQ(headInformation.connection.len, strlen("Connection"));
+
+    EXPECT_STREQ(headInformation.contentType.data, "ConnectionType");
+    EXPECT_EQ(headInformation.contentType.len, strlen("ConnectionType"));
+
+    EXPECT_STREQ(headInformation.length.data, "100");
+    EXPECT_EQ(headInformation.length.len, strlen("100"));
+}
+
+TEST(EncoderTest, TranslateNumber)
+{
+    char result[5] = {0};
+
+    size_t number = 12345;
+    translateNumber(&result[0], static_cast<uint16_t>(number));
+    EXPECT_STREQ("12345", &result[0]);
+
+    number = 65535;
+    translateNumber(&result[0], static_cast<uint16_t>(number));
+    EXPECT_STREQ("65535", &result[0]);
+}
+
+TEST(EncoderTest, EncodeCustomHead)
+{
+    TestAlignedHeader head;
+
+    const char*  testData = "Head wrapped into structure\r\n";
+    constexpr size_t lenData = 29ul;
+    std::array<uint8_t, lenData> expected = {'H','e','a','d',' ','w','r','a','p','p','e','d',' ','i','n','t','o',' ','s','t','r','u','c','t','u','r','e','\r','\n'};
+    std::array<uint8_t, lenData> result = {0};
+    size_t status = encodeHead<TestAlignedHeader>(result.data(), 0, head);
+
+    EXPECT_EQ(lenData, sizeof(TestAlignedHeader));
+    EXPECT_EQ(status, lenData);
+    EXPECT_EQ(status, strlen(testData));
+    EXPECT_EQ(result, expected);
+}
+
+
+TEST(EncoderTest, EncodeProperties)
+{
+    std::array<uint8_t, 50> result;
+
+    const char* first  = "first";
+    const char* second = "second";
+    const char* expect = "first, second\r\n";
+
+    constexpr size_t rows = 2ul;
+    const uint64_t properties[rows] = { 
+        reinterpret_cast<uint64_t>(&first[0]), 
+        reinterpret_cast<uint64_t>(&second[0])
+    };
+
+    constexpr size_t lenSeparator = 2ul;
+    const char separator[lenSeparator] = {',', ' '};
+
+    size_t status = encodeProperties(result.data(), 0, 
+                                    &properties[0], rows, 
+                                    separator, lenSeparator);
+
+    EXPECT_EQ(status, strlen(expect));
+    EXPECT_STREQ(expect, reinterpret_cast<const char*>(result.data()));
+}
+
+TEST(EncoderTest, ArrayToRefference)
+{
+    std::array<uint8_t, 1024> result;
+    
+
+    uint64_t first  = arrayReference<const char>("First");
+    uint64_t second = arrayReference<const char>("Second");
+
+    const uint8_t* firstLetter = reinterpret_cast<uint8_t*>(first);
+    const uint8_t* secondLetter = reinterpret_cast<uint8_t*>(second);
+    EXPECT_EQ('F', *firstLetter);
+    EXPECT_EQ('S', *secondLetter);
+}
+
+TEST(EncoderTest, EncodeFiled)
+{
+    std::array<uint8_t, 50> result;
+
+    const char* field  = "Accept";
+    const char* first  = "first";
+    const char* second = "second";
+    const char* expect = "Accept: first, second\r\n";
+
+    constexpr size_t lenSeparator = 2ul;
+    const char separator[lenSeparator] = {',', ' '};
+
+    constexpr size_t rows = 2ul;
+    const uint64_t properties[rows] = { 
+        reinterpret_cast<uint64_t>(&first[0]), 
+        reinterpret_cast<uint64_t>(&second[0])
+    };
+
+    size_t status = encodeField(result.data(), 0,
+                                field, strlen(field), 
+                                &properties[0], rows, 
+                                separator, lenSeparator);
+
+    EXPECT_EQ(status, strlen(expect));
+    EXPECT_STREQ(expect, reinterpret_cast<const char*>(result.data()));
+}
+
+TEST(EncoderTest, EncodeHead)
+{
+    std::array<uint8_t, 1024> result = {0};
+
+    constexpr size_t rows = 2ul;
+    const uint64_t properties[rows] = { 
+        arrayReference<const char>("Accept: first, second"), 
+        arrayReference<const char>("Connection: good")
+    };
+
+    const char* expect  = "Accept: first, second\r\nConnection: good\r\n";
+    size_t status = encodeHead(result.data(), 0,
+                                &properties[0], rows);
+    EXPECT_EQ(status, strlen(expect));
+    EXPECT_STREQ(expect, reinterpret_cast<const char*>(result.data()));
+
+
+    const char* expect2 = " Accept: first, second\r\nConnection: good\r\n";
+    result = {0};
+    size_t offset = 1ul;
+    std::memset(result.data(), ' ', offset);
+    status = encodeHead(result.data(), offset,
+                        &properties[0], rows);
+
+    EXPECT_EQ(status, strlen(expect2));
+    EXPECT_STREQ(expect2, reinterpret_cast<const char*>(result.data()));
+
 }
